@@ -8,7 +8,8 @@
           "data": {
             "type": "message",
             "text": "Привет, %first_name%! 👋\n\nЯ помощник группы Квартиры Луганска | Аренда | Продажа | Реклама\n\n👇Выбери действие – Жми кнопку👇",
-            "keyboard_type": "inline",
+            "keyboard_type": "reply",
+            "one_time": false,
             "buttons": [
               { "label": "📋 Выбрать шаблон", "next": "4", "url": "" },
               { "label": "↩️ Выйти на главную", "next": "6", "url": "" }
@@ -23,45 +24,25 @@
         },
         "4": {
           "id": 4,
-          "name": "btn_4",
+          "name": "msg_4",
           "data": {
-            "type": "buttons",
+            "type": "message",
             "text": "👇 Выбери нужный шаблон 👇\n\n«Генератор объявлений» – заполняешь блоки с параметрами объявления – получаешь готовый текст объявления (Жмешь кнопку скопировать текст объявления вставляешь в любой текстовый редактор и используешь пока актуально).",
             "keyboard_type": "inline",
-            "buttons": [
-              { "label": "🏢 #Сдам 👍", "next": "5", "url": "https://glyuk-tg.github.io/generator_sample-1/" },
-              { "label": "🏡 #Продам 👍", "next": "5", "url": "https://glyuk-tg.github.io/generator_sample-2/" },
-              { "label": "📣 #Реклама 👍", "next": "5", "url": "https://glyuk-tg.github.io/generator_sample-3/" },
-              { "label": "🏢 #Сниму 👍", "next": "5", "url": "https://glyuk-tg.github.io/generator_sample-4/" },
-              { "label": "🏡 #Куплю 👍", "next": "5", "url": "https://glyuk-tg.github.io/generator_sample-5/" },
-              { "label": "↩️ На главную", "next": "", "url": "https://vk.ru/arenda_kvartir_lnr" }
-            ]
-          },
-          "class": "node-buttons",
-          "typenode": false,
-          "inputs": { "input_1": { "connections": [{ "node": "2", "input": "output_1" }] } },
-          "outputs": { "output_1": { "connections": [] } },
-          "pos_x": 600,
-          "pos_y": 0
-        },
-        "5": {
-          "id": 5,
-          "name": "btn_5",
-          "data": {
-            "type": "buttons",
-            "text": "📋 ШАБЛОН: 🏢 #Сдам 👍 по ссылке\n\n➡️ Вернись в меню, чтобы выбрать другой шаблон\n\nЧто дальше?",
-            "keyboard_type": "reply",
             "one_time": false,
             "buttons": [
-              { "label": "📋 Выбрать шаблон", "next": "4", "url": "" },
-              { "label": "↩️ Выйти на главную", "next": "6", "url": "" }
+              { "label": "🏢 #Сдам 👍", "next": "", "url": "https://glyuk-tg.github.io/generator_sample-1/" },
+              { "label": "🏡 #Продам 👍", "next": "", "url": "https://glyuk-tg.github.io/generator_sample-2/" },
+              { "label": "📣 #Реклама 👍", "next": "", "url": "https://glyuk-tg.github.io/generator_sample-3/" },
+              { "label": "🏢 #Сниму 👍", "next": "", "url": "https://glyuk-tg.github.io/generator_sample-4/" },
+              { "label": "🏡 #Куплю 👍", "next": "", "url": "https://glyuk-tg.github.io/generator_sample-5/" }
             ]
           },
-          "class": "node-buttons",
+          "class": "node-message",
           "typenode": false,
-          "inputs": { "input_1": { "connections": [{ "node": "4", "input": "output_1" }] } },
+          "inputs": { "input_1": { "connections": [{ "node": "1", "input": "output_1" }] } },
           "outputs": { "output_1": { "connections": [] } },
-          "pos_x": 900,
+          "pos_x": 300,
           "pos_y": 0
         },
         "6": {
@@ -69,13 +50,17 @@
           "name": "msg_6",
           "data": {
             "type": "message",
-            "text": "👋 До связи, %first_name%!\n\nЕсли решишь публиковать — просто напиши /start\n\n🏠 Группа Квартиры Луганска | Аренда | Продажа | Реклама:\nhttps://vk.ru/arenda_kvartir_lnr"
+            "text": "👋 До связи, %first_name%!\n\nЕсли решишь публиковать — просто напиши /start\n\n⏱ Через 5 секунд бот автоматически переведёт тебя на главную страницу сообщества...",
+            "auto_redirect": {
+              "delay": 5,
+              "url": "https://vk.ru/arenda_kvartir_lnr"
+            }
           },
           "class": "node-message",
           "typenode": false,
-          "inputs": { "input_1": { "connections": [{ "node": "2", "input": "output_1" }, { "node": "5", "input": "output_1" }] } },
+          "inputs": { "input_1": { "connections": [{ "node": "1", "input": "output_1" }] } },
           "outputs": { "output_1": { "connections": [] } },
-          "pos_x": 600,
+          "pos_x": 300,
           "pos_y": 400
         }
       }
