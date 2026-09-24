@@ -8,7 +8,7 @@
           "data": {
             "type": "message",
             "text": "Привет, %first_name%! 👋\n\nЯ помощник группы Квартиры Луганска | Аренда | Продажа | Реклама\n\n👇Выбери действие – Жми кнопку👇",
-            "keyboard_type": "reply",
+            "keyboard_type": "inline",
             "one_time": false,
             "buttons": [
               { "label": "📋 Выбрать шаблон", "next": "4", "url": "" },
