@@ -7,7 +7,7 @@
           "name": "msg_1",
           "data": {
             "type": "message",
-            "text": "Привет, %first_name%! 👋\n\nЯ помощник группы «Квартиры Луганска».\n\nЗдесь ты можешь выбрать готовый шаблон для публикации объявления. Жми кнопку ниже 👇"
+            "text": "Привет, %first_name%! 👋\n\nЯ помощник группы Квартиры Луганска | Аренда | Продажа | Реклама\n\n👇Выбери действие – нажми кнопку👇"
           },
           "class": "node-message",
           "typenode": false,
@@ -21,10 +21,12 @@
           "name": "btn_2",
           "data": {
             "type": "buttons",
-            "text": "Выбери действие:",
+            "text": "",
+            "keyboard_type": "reply",
+            "one_time": false,
             "buttons": [
-              { "label": "📋 Выбрать шаблон", "next": "3", "url": "" },
-              { "label": "🚪 Выйти на главную", "next": "6", "url": "" }
+              { "label": "📋 Выбрать шаблон", "next": "4", "url": "" },
+              { "label": "↩️ Выйти на главную", "next": "6", "url": "" }
             ]
           },
           "class": "node-buttons",
@@ -34,20 +36,19 @@
           "pos_x": 300,
           "pos_y": 0
         },
-        "3": {
-          "id": 3,
-          "name": "btn_3",
+        "4": {
+          "id": 4,
+          "name": "btn_4",
           "data": {
             "type": "buttons",
-            "text": "👇 Выбери нужный шаблон 👇\n\n«Генератор объявлений» — заполняешь блоки с параметрами, получаешь готовый текст. Нажми на кнопку, потом скопируй текст в любой редактор.",
+            "text": "👇 Выбери нужный шаблон 👇\n\n«Генератор объявлений» – заполняешь блоки с параметрами объявления – получаешь готовый текст объявления (Жмешь кнопку скопировать текст объявления вставляешь в любой текстовый редактор и используешь пока актуально).",
+            "keyboard_type": "inline",
             "buttons": [
               { "label": "🏢 #Сдам 👍", "next": "", "url": "https://glyuk-tg.github.io/generator_sample-1/" },
               { "label": "🏡 #Продам 👍", "next": "", "url": "https://glyuk-tg.github.io/generator_sample-2/" },
               { "label": "📣 #Реклама 👍", "next": "", "url": "https://glyuk-tg.github.io/generator_sample-3/" },
               { "label": "🏢 #Сниму 👍", "next": "", "url": "https://glyuk-tg.github.io/generator_sample-4/" },
-              { "label": "🏡 #Куплю 👍", "next": "", "url": "https://glyuk-tg.github.io/generator_sample-5/" },
-              { "label": "⬅️ Назад", "next": "1", "url": "" },
-              { "label": "↩️ На главную", "next": "", "url": "https://vk.ru/arenda_kvartir_lnr" }
+              { "label": "🏡 #Куплю 👍", "next": "", "url": "https://glyuk-tg.github.io/generator_sample-5/" }
             ]
           },
           "class": "node-buttons",
@@ -57,45 +58,16 @@
           "pos_x": 600,
           "pos_y": 0
         },
-        "4": {
-          "id": 4,
-          "name": "msg_4",
-          "data": {
-            "type": "message",
-            "text": "📋 Шаблон открыт по ссылке выше 👆\n\nСкопируй текст из генератора и опубликуй в группе.\n\nЧто дальше?"
-          },
-          "class": "node-message",
-          "typenode": false,
-          "inputs": { "input_1": { "connections": [] } },
-          "outputs": { "output_1": { "connections": [{ "node": "5", "output": "input_1" }] } },
-          "pos_x": 900,
-          "pos_y": 0
-        },
-        "5": {
-          "id": 5,
-          "name": "btn_5",
-          "data": {
-            "type": "buttons",
-            "text": "Выбери:",
-            "buttons": [
-              { "label": "📋 Ещё объявление", "next": "3", "url": "" },
-              { "label": "🏠 В начало", "next": "1", "url": "" },
-              { "label": "↩️ На главную", "next": "", "url": "https://vk.ru/arenda_kvartir_lnr" }
-            ]
-          },
-          "class": "node-buttons",
-          "typenode": false,
-          "inputs": { "input_1": { "connections": [{ "node": "4", "input": "output_1" }] } },
-          "outputs": { "output_1": { "connections": [] } },
-          "pos_x": 1200,
-          "pos_y": 0
-        },
         "6": {
           "id": 6,
           "name": "msg_6",
           "data": {
             "type": "message",
-            "text": "👋 До связи, %first_name%!\n\nЕсли решишь публиковать — просто напиши /start\n\n🏠 Группа «Квартиры Луганска»:\nhttps://vk.ru/arenda_kvartir_lnr"
+            "text": "👋 До связи, %first_name%!\n\nЕсли решишь публиковать — просто напиши /start\n\n⏱ Через 5 секунд бот автоматически переведёт тебя на главную страницу сообщества...",
+            "auto_redirect": {
+              "delay": 5,
+              "url": "https://vk.ru/arenda_kvartir_lnr"
+            }
           },
           "class": "node-message",
           "typenode": false,
