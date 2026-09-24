@@ -7,7 +7,21 @@
           "name": "msg_1",
           "data": {
             "type": "message",
-            "text": "Привет, %first_name%! 👋\n\nЯ помощник группы Квартиры Луганска | Аренда | Продажа | Реклама\n\n👇Выбери действие – Жми кнопку👇",
+            "text": "Привет, %first_name%! 👋\n\nЯ помощник группы Квартиры Луганска | Аренда | Продажа | Реклама\n\n👇Выбери действие – Жми кнопку👇"
+          },
+          "class": "node-message",
+          "typenode": false,
+          "inputs": { "input_1": { "connections": [] } },
+          "outputs": { "output_1": { "connections": [{ "node": "2", "output": "input_1" }] } },
+          "pos_x": 0,
+          "pos_y": 0
+        },
+        "2": {
+          "id": 2,
+          "name": "btn_2",
+          "data": {
+            "type": "buttons",
+            "text": "",
             "keyboard_type": "reply",
             "one_time": false,
             "buttons": [
@@ -15,21 +29,20 @@
               { "label": "↩️ Выйти на главную", "next": "6", "url": "" }
             ]
           },
-          "class": "node-message",
+          "class": "node-buttons",
           "typenode": false,
-          "inputs": { "input_1": { "connections": [] } },
+          "inputs": { "input_1": { "connections": [{ "node": "1", "input": "output_1" }] } },
           "outputs": { "output_1": { "connections": [] } },
-          "pos_x": 0,
+          "pos_x": 300,
           "pos_y": 0
         },
         "4": {
           "id": 4,
-          "name": "msg_4",
+          "name": "btn_4",
           "data": {
-            "type": "message",
+            "type": "buttons",
             "text": "👇 Выбери нужный шаблон 👇\n\n«Генератор объявлений» – заполняешь блоки с параметрами объявления – получаешь готовый текст объявления (Жмешь кнопку скопировать текст объявления вставляешь в любой текстовый редактор и используешь пока актуально).",
             "keyboard_type": "inline",
-            "one_time": false,
             "buttons": [
               { "label": "🏢 #Сдам 👍", "next": "", "url": "https://glyuk-tg.github.io/generator_sample-1/" },
               { "label": "🏡 #Продам 👍", "next": "", "url": "https://glyuk-tg.github.io/generator_sample-2/" },
@@ -38,11 +51,11 @@
               { "label": "🏡 #Куплю 👍", "next": "", "url": "https://glyuk-tg.github.io/generator_sample-5/" }
             ]
           },
-          "class": "node-message",
+          "class": "node-buttons",
           "typenode": false,
-          "inputs": { "input_1": { "connections": [{ "node": "1", "input": "output_1" }] } },
+          "inputs": { "input_1": { "connections": [{ "node": "2", "input": "output_1" }] } },
           "outputs": { "output_1": { "connections": [] } },
-          "pos_x": 300,
+          "pos_x": 600,
           "pos_y": 0
         },
         "6": {
@@ -58,9 +71,9 @@
           },
           "class": "node-message",
           "typenode": false,
-          "inputs": { "input_1": { "connections": [{ "node": "1", "input": "output_1" }] } },
+          "inputs": { "input_1": { "connections": [{ "node": "2", "input": "output_1" }] } },
           "outputs": { "output_1": { "connections": [] } },
-          "pos_x": 300,
+          "pos_x": 600,
           "pos_y": 400
         }
       }
