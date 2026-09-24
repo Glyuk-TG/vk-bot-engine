@@ -7,21 +7,7 @@
           "name": "msg_1",
           "data": {
             "type": "message",
-            "text": "Привет, %first_name%! 👋\n\nЯ помощник группы Квартиры Луганска | Аренда | Продажа | Реклама\n\n👇Выбери действие – Жми кнопку👇"
-          },
-          "class": "node-message",
-          "typenode": false,
-          "inputs": { "input_1": { "connections": [] } },
-          "outputs": { "output_1": { "connections": [{ "node": "2", "output": "input_1" }] } },
-          "pos_x": 0,
-          "pos_y": 0
-        },
-        "2": {
-          "id": 2,
-          "name": "btn_2",
-          "data": {
-            "type": "buttons",
-            "text": "",
+            "text": "Привет, %first_name%! 👋\n\nЯ помощник группы Квартиры Луганска | Аренда | Продажа | Реклама\n\n👇Выбери действие – Жми кнопку👇",
             "keyboard_type": "reply",
             "one_time": false,
             "buttons": [
@@ -29,11 +15,11 @@
               { "label": "↩️ Выйти на главную", "next": "6", "url": "" }
             ]
           },
-          "class": "node-buttons",
+          "class": "node-message",
           "typenode": false,
-          "inputs": { "input_1": { "connections": [{ "node": "1", "input": "output_1" }] } },
+          "inputs": { "input_1": { "connections": [] } },
           "outputs": { "output_1": { "connections": [] } },
-          "pos_x": 300,
+          "pos_x": 0,
           "pos_y": 0
         },
         "4": {
