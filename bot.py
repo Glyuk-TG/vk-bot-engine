@@ -30,16 +30,11 @@ with open('scenario.json', 'r', encoding='utf-8') as f:
     scenario = json.load(f)
 
 NODES = scenario['drawflow']['Home']['data']
-
-# Индекс: id -> node
 NODES_BY_ID = {n['name']: n for n in NODES.values()}
-
-# Стартовый узел — первый по порядку (msg_1)
 START_NODE = 'msg_1'
 
 # ============== СОСТОЯНИЕ ПОЛЬЗОВАТЕЛЕЙ ==============
 
-# user_id -> {'node': 'msg_1', 'vars': {...}}
 user_states = {}
 
 # ============== VK API ==============
@@ -51,7 +46,6 @@ longpoll = VkBotLongPoll(vk_session, VK_GROUP_ID)
 # ============== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==============
 
 def get_user_name(user_id):
-    """Получает имя пользователя через VK API"""
     try:
         res = vk.users.get(user_ids=user_id, fields='first_name')
         if res and len(res) > 0:
@@ -62,28 +56,24 @@ def get_user_name(user_id):
 
 
 def replace_vars(text, user_id, state):
-    """Заменяет %first_name% и другие переменные"""
     if not text:
         return ''
     text = text.replace('%first_name%', get_user_name(user_id))
-    # Заменяем пользовательские переменные
     for var_name, var_value in state.get('vars', {}).items():
         text = text.replace(f'%{var_name}%', str(var_value))
     return text
 
 
-def build_keyboard(buttons):
+def build_keyboard(buttons, inline=False):
     """Собирает клавиатуру VK с поддержкой open_link и callback"""
-    keyboard = VkKeyboard(one_time=False, inline=False)
+    keyboard = VkKeyboard(one_time=False, inline=inline)
 
-    # Разделяем кнопки: сначала все обычные, потом все ссылочные
-    # Но VK требует, чтобы open_link были отдельными рядами
     callback_buttons = [b for b in buttons if not b.get('url')]
     link_buttons = [b for b in buttons if b.get('url')]
 
     first = True
 
-    # Ссылочные кнопки — каждая на своём ряду
+    # Ссылочные кнопки
     for btn in link_buttons:
         if not first:
             keyboard.add_line()
@@ -93,8 +83,7 @@ def build_keyboard(buttons):
             link=btn['url']
         )
 
-    # Обычные кнопки — можно по 2 в ряд
-    # Но проще каждую на своём ряду, чтобы не путаться
+    # Callback-кнопки
     for btn in callback_buttons:
         if not first:
             keyboard.add_line()
@@ -110,7 +99,6 @@ def build_keyboard(buttons):
 
 
 def send_message(user_id, text, keyboard=None):
-    """Отправляет сообщение"""
     params = {
         'user_id': user_id,
         'message': text,
@@ -124,8 +112,15 @@ def send_message(user_id, text, keyboard=None):
         log.error(f'Ошибка отправки сообщения {user_id}: {e}')
 
 
+def find_node_by_id(node_id):
+    """Ищет узел по числовому ID (msg_4, btn_4, ...)"""
+    for nid, n in NODES_BY_ID.items():
+        if nid.endswith(f'_{node_id}') or nid == node_id:
+            return nid
+    return None
+
+
 def get_next_node(node_id):
-    """Возвращает ID следующего узла (первое соединение)"""
     node = NODES_BY_ID.get(node_id)
     if not node:
         return None
@@ -134,32 +129,11 @@ def get_next_node(node_id):
         connections = outputs[out_key].get('connections', [])
         if connections:
             target_id = connections[0]['node']
-            target_node = NODES_BY_ID.get(f'msg_{target_id}') or \
-                          NODES_BY_ID.get(f'btn_{target_id}') or \
-                          NODES_BY_ID.get(f'cond_{target_id}') or \
-                          NODES_BY_ID.get(f'wait_{target_id}')
-            if not target_node:
-                # Ищем по числу в имени
-                for nid, n in NODES_BY_ID.items():
-                    if nid.endswith(f'_{target_id}'):
-                        return nid
-            else:
-                return target_node['name']
-    return None
-
-
-def find_node_by_id(node_id):
-    """Ищет узел по числовому ID"""
-    for nid, n in NODES_BY_ID.items():
-        if nid.endswith(f'_{node_id}') or nid == node_id:
-            return nid
+            return find_node_by_id(target_id)
     return None
 
 
 def process_node(user_id, node_id, state):
-    """
-    Выполняет узел. Возвращает следующий node_id или None.
-    """
     node = NODES_BY_ID.get(node_id)
     if not node:
         log.warning(f'Узел не найден: {node_id}')
@@ -169,34 +143,49 @@ def process_node(user_id, node_id, state):
 
     if ntype == 'message':
         text = replace_vars(node['data'].get('text', ''), user_id, state)
-        send_message(user_id, text)
+        buttons = node['data'].get('buttons', [])
+        keyboard_type = node['data'].get('keyboard_type', 'reply')
+        keyboard = None
+        if buttons:
+            keyboard = build_keyboard(buttons, inline=(keyboard_type == 'inline'))
+        send_message(user_id, text, keyboard=keyboard)
+
+        # Автопереход (эмуляция)
+        redirect = node['data'].get('auto_redirect')
+        if redirect:
+            delay = redirect.get('delay', 5)
+            url = redirect.get('url', '')
+            if url:
+                time.sleep(delay)
+                kb = VkKeyboard(inline=True)
+                kb.add_openlink_button(label='↩️ На главную', link=url)
+                send_message(user_id, '👇 Нажми, чтобы перейти:', keyboard=kb)
+
+        if buttons:
+            return None  # ждём нажатия
         return get_next_node(node_id)
 
     elif ntype == 'buttons':
+        # На случай, если остались старые узлы типа buttons
         text = replace_vars(node['data'].get('text', ''), user_id, state)
         buttons = node['data'].get('buttons', [])
-        keyboard = build_keyboard(buttons)
+        keyboard = build_keyboard(buttons) if buttons else None
         send_message(user_id, text, keyboard=keyboard)
-        return None  # Ждём нажатия кнопки
+        return None
 
     elif ntype == 'wait':
         text = replace_vars(node['data'].get('text', ''), user_id, state)
         send_message(user_id, text)
         state['waiting_var'] = node['data'].get('var_name', 'answer')
-        return None  # Ждём ввода
-
-    elif ntype == 'condition':
-        # В нашем сценарии не используется, но пусть будет
-        return get_next_node(node_id)
+        return None
 
     return None
 
 
 def run_chain(user_id, start_node_id, state):
-    """Запускает цепочку узлов до первой остановки (buttons/wait)"""
     current = start_node_id
     steps = 0
-    max_steps = 50  # защита от бесконечного цикла
+    max_steps = 50
 
     while current and steps < max_steps:
         steps += 1
@@ -212,12 +201,11 @@ def run_chain(user_id, start_node_id, state):
 def handle_message(event):
     user_id = event.message.from_id
     if user_id < 0:
-        return  # игнорируем сообщения от групп
+        return
 
     text = (event.message.text or '').strip()
     payload = None
 
-    # Проверяем payload (нажатие кнопки)
     if hasattr(event.message, 'payload') and event.message.payload:
         try:
             payload = json.loads(event.message.payload)
@@ -226,19 +214,18 @@ def handle_message(event):
 
     state = user_states.get(user_id, {'node': None, 'vars': {}})
 
-    # Обработка /start или первого сообщения
+    # /start
     if text.lower() in ('/start', 'начать', 'start', 'привет'):
         state = {'node': None, 'vars': {}}
         user_states[user_id] = state
         run_chain(user_id, START_NODE, state)
         return
 
-    # Нажатие кнопки-перехода (callback)
+    # Нажатие callback-кнопки
     if payload and 'next' in payload and payload['next']:
         next_id = payload['next']
-        # next в JSON — это числовой ID или имя
-        target = find_node_by_id(next_id) or next_id
-        if target in NODES_BY_ID:
+        target = find_node_by_id(next_id)
+        if target:
             run_chain(user_id, target, state)
             user_states[user_id] = state
         return
@@ -254,7 +241,23 @@ def handle_message(event):
         user_states[user_id] = state
         return
 
-    # Если ничего не подошло — предложим /start
+    # Фолбэк: реагируем на текст, совпадающий с label кнопок
+    current_node_name = state.get('node')
+    if current_node_name:
+        current_node = NODES_BY_ID.get(current_node_name)
+        if current_node:
+            for btn in current_node['data'].get('buttons', []):
+                if btn['label'].strip().lower() == text.lower():
+                    if btn.get('url'):
+                        # Открываем ссылку — VK сам не откроет, но хотя бы сообщим
+                        send_message(user_id, f'🔗 {btn["url"]}')
+                    elif btn.get('next'):
+                        target = find_node_by_id(btn['next'])
+                        if target:
+                            run_chain(user_id, target, state)
+                            user_states[user_id] = state
+                    return
+
     send_message(user_id, 'Напиши /start, чтобы начать заново.')
 
 
